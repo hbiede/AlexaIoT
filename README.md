@@ -14,6 +14,5 @@ This file is useful to allow a server (e.g., [Raspbery Pi](https://www.raspberry
 Currently only supports boolean states.
 
 ## Roadmap:
-One-off actions
-Multi-state actions
 Lambda Support
+Raspberry Pi usage examples

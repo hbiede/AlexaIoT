@@ -10,7 +10,7 @@ class Listener:
     Params:
     name: string naming the handler
     iot: IoT object created with `createIoT`
-    action: callback taking a state value
+    action: callback taking the name of the thing being controlled and the new state value
     """
     def __init__(self, name, iot, action):
         self.name = name
@@ -22,23 +22,20 @@ class Listener:
 	self.action = action
 
     def set(self, state):
-        print('Turning %s %s' % (self.name, 'ON' if state else 'OFF'))
+        state = json.loads(payload)['state']['value']
+        print('Turning %s to state %s' % (self.name, state)
         # Perform action
-	self.action(state)
+	self.action(self.name, state)
 
 	# Takes JSON update, a callback, and a timeout in seconds
         self.shadow.shadowUpdate(json.dumps({
             'state': {
                 'reported': {
-                    'light': state
+                    'value': state
                     }
                 }
             }
         ), None, 5)
-
-    def newShadow(self, payload, responseStatus, token):
-        newState = json.loads(payload)['state']['light']
-        self.set(newState)
 
 """
 endpoint: string containing the URL to hit at AWS (e.g., "xxxxxxxxxxxxxxx.iot.us-east-1.amazonaws.com")
@@ -55,8 +52,8 @@ def createIoT(endpoint):
     iot.connect()
     return iot
 
-def action(state):
-    print("Here is where I would turn something %s if I could" % ("on" if state else "off"))
+def action(name, state):
+    print("Acting on %s to change to state %s" % (name, state))
 
 if __name__ == "__main__":
     endpoint = "xxxxxxxxxxxxxxx.iot.us-east-1.amazonaws.com"
